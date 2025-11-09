@@ -19,7 +19,7 @@ return new class extends Migration
         $table->string('contact_phone');
         $table->string('logo_url')->nullable();
         $table->boolean('verification')->default(false);
-        $table->foreignId('user_id')->constrained()->cascadeOnDelete(); 
+        $table->foreignId('user_id')->constrained()->cascadeOnDelete();
         $table->timestamps();
     });
     }
