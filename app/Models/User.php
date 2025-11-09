@@ -50,7 +50,13 @@ class User extends Authenticatable
                     ->withTimestamps();
     }
 
-   
+    /**
+     * A user (futsal owner) has one futsal venue
+     */
+    public function futsalVenue()
+    {
+        return $this->hasOne(FutsalVenue::class, 'user_id');
+    }
 
     /**
      * Check if the user has a specific role

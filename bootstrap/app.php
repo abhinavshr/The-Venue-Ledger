@@ -1,8 +1,12 @@
 <?php
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Application;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,5 +19,30 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->renderable(function (Throwable $e, Request $request) {
+            if ($request->expectsJson()) {
+                if ($e instanceof HttpException && $e->getStatusCode() === Response::HTTP_INTERNAL_SERVER_ERROR) {
+                    \Log::error('Internal Server Error: ' . $e->getMessage(), [
+                        'error' => [
+                            'exception' => get_class($e),
+                            'message' => $e->getMessage(),
+                            'file' => $e->getFile(),
+                            'line' => $e->getLine(),
+                            'trace' => $e->getTrace(),
+                        ],
+                        'url' => $request->url(),
+                        'method' => $request->method(),
+                        'user_id' => Auth::id(),
+                    ]);
+
+                    return response()->json([
+                        'status' => 'error',
+                        'code' => $e->getStatusCode(),
+                        'message' => 'Oops! Something went wrong. Please try again later.',
+                    ], $e->getStatusCode());
+                }
+            }
+
+            return null;
+        });
     })->create();
