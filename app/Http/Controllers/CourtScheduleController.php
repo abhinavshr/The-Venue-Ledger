@@ -4,10 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\CourtSchedule;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Requests\{StoreCourtScheduleRequest, UpdateCourtScheduleRequest};
 
 class CourtScheduleController extends Controller
 {
+    use AuthorizesRequests;
+
+    public function __construct()
+    {
+        // Automatically applies policy for all resource methods
+        $this->authorizeResource(CourtSchedule::class, 'schedule');
+    }
+
     /**
      * Display a listing of the court schedules.
      */
