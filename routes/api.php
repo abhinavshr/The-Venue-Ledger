@@ -8,3 +8,8 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 require __DIR__.'/userapi.php';
+
+Route::middleware('auth:sanctum')->group(function () {
+    // Resource routes for court schedules
+    Route::apiResource('court-schedules', CourtScheduleController::class);
+});
