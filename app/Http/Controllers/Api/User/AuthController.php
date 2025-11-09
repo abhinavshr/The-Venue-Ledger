@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\User; // Correct Namespace
+namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\FutsalVenue;
@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -99,27 +100,45 @@ class AuthController extends Controller
     public function registerFutsalVenue(Request $request, $user_id)
     {
         $request->validate([
-            'name' => 'required',
-            'address' => 'required',
+            'name' => 'required|string',
+            'address' => 'required|string',
             'contact_email' => 'required|email',
-            'contact_phone' => 'required',
+            'contact_phone' => 'required|string',
             'logo_url' => 'nullable|string'
         ]);
 
-        $futsalVenue = FutsalVenue::create([
-            'name' => $request->name,
-            'address' => $request->address,
-            'contact_email' => $request->contact_email,
-            'contact_phone' => $request->contact_phone,
-            'logo_url' => $request->logo_url,
-            'user_id' => $user_id,
-        ]);
+        DB::beginTransaction();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Futsal Venue Registered Successfully',
-            'data' => $futsalVenue
-        ], 201);
+        try {
+            $futsalVenue = FutsalVenue::create([
+                'name' => $request->name,
+                'address' => $request->address,
+                'contact_email' => $request->contact_email,
+                'contact_phone' => $request->contact_phone,
+                'logo_url' => $request->logo_url,
+                'user_id' => $user_id,
+            ]);
+
+            $user = User::findOrFail($user_id);
+            $user->update(['role_id' => 2]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Futsal Venue Registered Successfully and User Role Updated',
+                'data' => [
+                    'venue' => $futsalVenue,
+                    'user' => $user
+                ]
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Registration failed: ' . $e->getMessage(),
+            ], 500);
+        }
     }
-
 }
