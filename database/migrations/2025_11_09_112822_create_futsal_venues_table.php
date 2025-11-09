@@ -9,9 +9,9 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up()
-{
-    Schema::create('futsal_owners', function (Blueprint $table) {
+    public function up(): void
+    {
+        Schema::create('futsal_venues', function (Blueprint $table) {
         $table->id();
         $table->string('name');
         $table->string('address');
@@ -22,14 +22,13 @@ return new class extends Migration
         $table->foreignId('user_id')->constrained()->cascadeOnDelete(); 
         $table->timestamps();
     });
-}
-
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('futsal_owners');
+        Schema::dropIfExists('futsal_venues');
     }
 };

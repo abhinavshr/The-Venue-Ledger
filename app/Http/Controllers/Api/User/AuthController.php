@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\User; // Correct Namespace
 
 use App\Http\Controllers\Controller;
-use App\Models\FutsalOwner;
+use App\Models\FutsalVenue;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -96,7 +96,7 @@ class AuthController extends Controller
         ]);
     }
 
-    public function registerFutsalOwner(Request $request, $user_id)
+    public function registerFutsalVenue(Request $request, $user_id)
     {
         $request->validate([
             'name' => 'required',
@@ -106,7 +106,7 @@ class AuthController extends Controller
             'logo_url' => 'nullable|string'
         ]);
 
-        $futsalOwner = FutsalOwner::create([
+        $futsalVenue = FutsalVenue::create([
             'name' => $request->name,
             'address' => $request->address,
             'contact_email' => $request->contact_email,
@@ -117,8 +117,8 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Futsal Owner Registered Successfully',
-            'data' => $futsalOwner
+            'message' => 'Futsal Venue Registered Successfully',
+            'data' => $futsalVenue
         ], 201);
     }
 
