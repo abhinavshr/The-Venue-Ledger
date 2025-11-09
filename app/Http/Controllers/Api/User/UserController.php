@@ -3,39 +3,36 @@
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-     public function getProfile(Request $request)
+    use ApiResponse; 
+
+    /**
+     * Get the authenticated user's profile
+     */
+    public function getProfile(Request $request)
     {
         $user = $request->user();
 
         if (!$user) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthenticated.'
-            ], 401);
+            return $this->responseError('Unauthenticated.', 401);
         }
 
-        return response()->json([
-            'status' => true,
-            'message' => 'User profile retrieved successfully.',
-            'data' => $user
-        ], 200);
+        return $this->responseSuccess($user, 'User profile retrieved successfully.');
     }
 
+    
     public function updateProfile(Request $request)
     {
         $user = $request->user();
 
         if (!$user) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthenticated.'
-            ], 401);
+            return $this->responseError('Unauthenticated.', 401);
         }
 
         $validated = $request->validate([
@@ -53,11 +50,6 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Profile updated successfully.',
-            'data' => $user
-        ], 200);
+        return $this->responseSuccess($user, 'Profile updated successfully.');
     }
-    
 }
