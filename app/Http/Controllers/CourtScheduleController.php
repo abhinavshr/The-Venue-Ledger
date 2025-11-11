@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CourtSchedule;
+use App\Models\Scopes\FutsalVenueScope;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Requests\{StoreCourtScheduleRequest, UpdateCourtScheduleRequest};
@@ -14,7 +15,7 @@ class CourtScheduleController extends Controller
     public function __construct()
     {
         // Automatically applies policy for all resource methods
-        $this->authorizeResource(CourtSchedule::class, 'schedule');
+        $this->authorizeResource(CourtSchedule::class, 'court_schedule');
     }
 
     /**
@@ -22,7 +23,9 @@ class CourtScheduleController extends Controller
      */
     public function index()
     {
-        $schedules = CourtSchedule::latest()->get();
+        $schedules = CourtSchedule::withoutGlobalScope(FutsalVenueScope::class)
+                        ->latest()
+                        ->get();
 
         return $this->responseSuccess(
             $schedules,
@@ -38,7 +41,10 @@ class CourtScheduleController extends Controller
      */
     public function store(StoreCourtScheduleRequest $request)
     {
-        $schedule = CourtSchedule::create($request->validated());
+        $validatedSchedule = $request->validated();
+        $validatedSchedule['futsal_venue_id'] = auth()->user()->futsalVenue->id;
+
+        $schedule = CourtSchedule::create($validatedSchedule);
 
         return $this->responseSuccess(
             $schedule,
@@ -84,7 +90,7 @@ class CourtScheduleController extends Controller
         return $this->responseSuccess(
             null,
             'Court schedule deleted successfully.',
-            Response::HTTP_OK
+            Response::HTTP_NO_CONTENT
         );
     }
 }
