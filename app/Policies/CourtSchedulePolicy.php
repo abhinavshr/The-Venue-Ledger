@@ -14,6 +14,7 @@ class CourtSchedulePolicy
     {
         return $user->futsalVenue && $user->futsalVenue->id === $schedule->futsal_venue_id;
     }
+    
 
     /**
      * Determine whether the user can view any schedules.

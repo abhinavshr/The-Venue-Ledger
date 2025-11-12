@@ -46,4 +46,9 @@ class CourtSchedule extends Model
     {
         return $this->belongsTo(FutsalVenue::class);
     }
+
+    public function court()
+    {
+        return $this->belongsTo(Court::class);
+    }
 }
