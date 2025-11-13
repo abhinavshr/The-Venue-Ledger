@@ -13,7 +13,7 @@ class CourtScheduleController extends Controller
 
     public function __construct()
     {
-        // Automatically applies policy for all resource methods
+        // Automatically applies policy for all resource methodsx`
         $this->authorizeResource(CourtSchedule::class, 'schedule');
     }
 
@@ -61,7 +61,7 @@ class CourtScheduleController extends Controller
 
     /**
      * Update the specified court schedule.
-     * 
+     *
      */
     public function update(UpdateCourtScheduleRequest $request, CourtSchedule $schedule)
     {

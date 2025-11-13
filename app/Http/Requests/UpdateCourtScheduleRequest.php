@@ -23,12 +23,19 @@ class UpdateCourtScheduleRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'futsal_venue_id' => [
+                'required',
+                'integer',
+                // Rule::exists('courts', 'id')->where(function ($query) {
+                //     $query->where('futsal_venue_id', $this->user()->futsalVenue?->futsal_venue_id);
+                // }),
+            ],
             'court_id' => [
                 'required',
                 'integer',
-                Rule::exists('courts', 'id')->where(function ($query) {
-                    $query->where('futsal_venue_id', $this->user()->futsalVenue?->futsal_venue_id);
-                })
+                // Rule::exists('courts', 'id')->where(function ($query) {
+                //     $query->where('futsal_venue_id', $this->user()->futsalVenue?->futsal_venue_id);
+                // })
             ],
             'start_time' => 'sometimes|date_format:H:i',
             'end_time' => 'sometimes|date_format:H:i|after:start_time',

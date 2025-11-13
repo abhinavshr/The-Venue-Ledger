@@ -10,6 +10,6 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::post('/register/{user_id}', [AuthController::class, 'registerFutsalVenue']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/profile', [UserController::class, 'getProfile']);     
-    Route::put('/profile/update', [UserController::class, 'updateProfile']); 
+    Route::get('/profile', [UserController::class, 'getProfile']);
+    Route::put('/profile/update', [UserController::class, 'updateProfile']);
 });
