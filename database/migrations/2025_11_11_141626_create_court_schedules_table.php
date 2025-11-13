@@ -18,7 +18,7 @@ return new class extends Migration
             $table->time('start_time');
             $table->time('end_time');
             $table->integer('max_slots');
-            $table->string('recurring_days'); 
+            $table->string('recurring_days'); // e.g., "Mon,Tue,Wed,Thu,Fri" (days of the week it recurses)
             $table->timestamps();
         });
     }
