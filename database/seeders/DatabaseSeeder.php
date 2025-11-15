@@ -17,6 +17,10 @@ class DatabaseSeeder extends Seeder
 
         $this->call(RolesTableSeeder::class);
         $this->call(UserSeeder::class);
+        $this->call(SuperAdminSeeder::class);
+        $this->call(class: FutsalVenueTableSeeder::class);
+        $this->call(CourtTableSeeder::class);
+        $this->call(class: CourtScheduleTableSeeder::class);
 
 
         // User::factory()->create([
