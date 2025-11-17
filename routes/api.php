@@ -11,6 +11,7 @@ Route::get('/user', function (Request $request) {
 require __DIR__.'/userapi.php';
 require __DIR__.'/futsalOwnerApi.php';
 require __DIR__.'/superadmin.php';
+require __DIR__.'/authapi.php';
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('court-schedules', CourtScheduleController::class);
