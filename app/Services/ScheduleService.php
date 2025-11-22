@@ -23,7 +23,6 @@ class ScheduleService
         // Check for any schedule exception on this date
         $exception = ScheduleException::where('court_id', $courtId)
         ->whereDate('date', $date)
-        // ->lockForUpdate()
         ->first();
 
         if ($exception) {
@@ -43,7 +42,6 @@ class ScheduleService
             ->where('day_of_week', $day)
             ->where('start_time', '<=', $start->format('H:i:s'))
             ->where('end_time', '>=', $end->format('H:i:s'))
-            // ->lockForUpdate()
             ->first();
 
         if (!$schedule) {
