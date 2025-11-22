@@ -67,7 +67,7 @@ class CourtScheduleController extends Controller
 
     /**
      * Update the specified court schedule.
-     * 
+     *
      */
     public function update(UpdateCourtScheduleRequest $request, CourtSchedule $schedule)
     {
