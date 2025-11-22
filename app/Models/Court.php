@@ -18,8 +18,19 @@ class Court extends Model
         'status'
     ];
 
+    // Relationships
     public function futsalVenue()
     {
         return $this->belongsTo(FutsalVenue::class);
+    }
+
+    public function priceShifts()
+    {
+        return $this->hasMany(CourtPriceShift::class);
+    }
+
+    public function recurringSchedules()
+    {
+        return $this->hasMany(RecurringSchedule::class);
     }
 }
