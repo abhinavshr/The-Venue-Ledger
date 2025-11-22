@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
+use App\Mail\VerifyOtpMail;
 use App\Models\FutsalVenue;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,12 +12,48 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
     /**
      * Handle user registration.
      */
+    // public function register(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'name' => 'required|string|max:255',
+    //         'email' => 'required|string|email|max:255|unique:users',
+    //         'password' => 'required|string|min:6|confirmed',
+    //         'phone_number' => 'nullable|string|max:20',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return response()->json(['errors' => $validator->errors()], 422);
+    //     }
+
+    //     // Generate unique 6-digit OTP code
+    //     do {
+    //         $otp_code = random_int(100000, 999999);
+    //     } while (User::where('otp_code', $otp_code)->exists());
+
+    //     $user = User::create([
+    //         'name' => $request->name,
+    //         'email' => $request->email,
+    //         'password' => Hash::make($request->password),
+    //         'phone_number' => $request->phone_number,
+    //         'otp_code' => $otp_code,
+    //         'role_id' => 1, // default role
+    //     ]);
+
+    //     $token = $user->createToken('auth_token')->plainTextToken;
+
+    //     return response()->json([
+    //         'message' => 'User registered successfully',
+    //         'user' => $user,
+    //         'token' => $token,
+    //     ], 201);
+    // }
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -30,26 +67,27 @@ class AuthController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Generate unique 6-digit OTP code
+        // Generate unique 6-digit OTP
         do {
             $otp_code = random_int(100000, 999999);
         } while (User::where('otp_code', $otp_code)->exists());
 
+        // Create user
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'phone_number' => $request->phone_number,
             'otp_code' => $otp_code,
-            'role_id' => 1, // default role
+            'role_id' => 1,
         ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        // Send OTP email
+        Mail::to($user->email)->send(new VerifyOtpMail($otp_code));
 
         return response()->json([
-            'message' => 'User registered successfully',
+            'message' => 'User registered. OTP sent to email.',
             'user' => $user,
-            'token' => $token,
         ], 201);
     }
 
@@ -140,5 +178,35 @@ class AuthController extends Controller
                 'message' => 'Registration failed: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Handles the verify otp
+     **/
+
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp_code' => 'required|numeric',
+        ]);
+
+        $user = User::where('email', $request->email)
+            ->where('otp_code', $request->otp_code)
+            ->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Invalid OTP'], 400);
+        }
+
+        // Mark email as verified
+        $user->email_verified_at = now();
+        $user->otp_code = null;
+        $user->save();
+
+        return response()->json([
+            'message' => 'Email verified successfully',
+            'user' => $user,
+        ]);
     }
 }
