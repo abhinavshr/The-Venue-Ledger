@@ -9,6 +9,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 require __DIR__.'/userapi.php';
+require __DIR__.'/bookingApi.php';
 require __DIR__.'/futsalOwnerApi.php';
 
 Route::middleware('auth:sanctum')->group(function () {
